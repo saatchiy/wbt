@@ -61,7 +61,7 @@ public class Board extends JPanel implements ActionListener {
     private boolean gameover = false;
     private int lives;
     private int score;
-    private int hiscore=0;
+    private int hiscore = 0;
     private int boardpov;
     private int crawlerzoffset;
     private int dptLeft;   // death pause ticks remaining; used to provide a pause when player dies.
@@ -95,7 +95,7 @@ public class Board extends JPanel implements ActionListener {
         enemymissiles = new ArrayList<Missile>();
         spikes = new ArrayList<Spike>();
         stars = new ArrayList<List<int[]>>();
-        for (int i=0; i< NUM_STARS; i++){
+        for (int i = 0; i < NUM_STARS; i++){
         	// this is awkward, but we'd like to use the existing plotting method, which expects a 
         	// List for each thing to be drawn -- in this case, a point.
         	int[] starcoords = new int[3];
@@ -117,8 +117,8 @@ public class Board extends JPanel implements ActionListener {
         	hiscore = Integer.parseInt(br.readLine());;
       		f.close();
         }
-        catch (Exception e)
-        { // if we can't read the high score file...oh well.
+        catch (Exception e) { 
+        	// if we can't read the high score file...oh well.
         }
         
         // force soundmanager singleton to initialize
@@ -134,8 +134,7 @@ public class Board extends JPanel implements ActionListener {
     /**
      * Initialize the game.
      */
-    private void startGame()
-    {
+    private void startGame() {
     	lives=START_LIVES;
     	gameover=false;
     	score = 0;
@@ -147,34 +146,38 @@ public class Board extends JPanel implements ActionListener {
     /**
      * initialize a level for play
      */
-    private void initLevel(){
-    	levelinfo = new Level (levelnum, B_WIDTH, B_HEIGHT);
+    private void initLevel() {
+    	levelinfo = new Level(levelnum, B_WIDTH, B_HEIGHT);
         crawler = new Crawler(levelinfo);
         exes.clear();
         int ncols = levelinfo.getColumns().size();
-        for (int i=0; i<levelinfo.getNumExes(); i++ ) {
+        for (int i=0; i<levelinfo.getNumExes(); i++) {
             exes.add(new Ex(r.nextInt(ncols),
             		levelnum > 1 ? r.nextBoolean() : false,
             		ncols, 
        				levelinfo.exesCanMove(),
-       				levelinfo.isContinuous() ));
+       				levelinfo.isContinuous()));
         }
         spikes.clear();
         if (levelinfo.getNumSpikes() > 0) {
         	boolean hasSpike[] = new boolean[ncols];
-        	for (int i=0; i<ncols;i++)
+        	for (int i=0; i<ncols;i++) {
         		hasSpike[i]=true;
-        	for (int i=0; i<(ncols-levelinfo.getNumSpikes());) {
+        	}
+        		
+        	for (int i = 0; i < (ncols-levelinfo.getNumSpikes()); ) {
         		int sc = r.nextInt(ncols);
         		if (hasSpike[sc]) {
         			hasSpike[sc] = false;
         			i++;
         		}
         	}
-        	for (int i=0; i<ncols;i++)
-        		if (hasSpike[i])
-        			spikes.add(new Spike(i));
         	
+        	for (int i = 0; i < ncols; i++) {
+        		if (hasSpike[i]) {
+        			spikes.add(new Spike(i));
+        		}
+        	}
         }
         crawler.resetZapper();
 
@@ -198,12 +201,13 @@ public class Board extends JPanel implements ActionListener {
             		r.nextBoolean(),
             		levelinfo.getColumns().size(), 
        				levelinfo.exesCanMove(),
-       				levelinfo.isContinuous() ));
-            exes.get(0).resetZ(LEVEL_DEPTH *5/4);
+       				levelinfo.isContinuous()));
+            exes.get(0).resetZ(LEVEL_DEPTH * 5 / 4);
         }
         else {
-          for (Ex ex : exes )
-            ex.resetZ(r.nextInt(LEVEL_DEPTH*2 + LEVEL_DEPTH *levelinfo.getNumExes()/5) + LEVEL_DEPTH*5/4);
+			for (Ex ex : exes) {
+				ex.resetZ(r.nextInt(LEVEL_DEPTH * 2 + LEVEL_DEPTH * levelinfo.getNumExes() / 5) + LEVEL_DEPTH * 5 / 4);
+			}
         }
     }
     
@@ -225,13 +229,13 @@ public class Board extends JPanel implements ActionListener {
      * @return
      */
     private static double getZFact(int z) {
-      return 1.0-(ZSTRETCH/(z+ZSTRETCH) );
+      return 1.0 - (ZSTRETCH / (z + ZSTRETCH));
     }
 
     // the downside to the curve used to represent the z-axis, is that
     // it goes to infinity quickly for negative Z values.  to get around this,
     // a line is used to continue the slope manageably for negative z.
-    private static double ZFACT_TAIL_SLOPE = 2*(getZFact(1)-getZFact(0)) / (1-0);
+    private static double ZFACT_TAIL_SLOPE = 2 * (getZFact(1) - getZFact(0)) / (1 - 0);
 
     /**
      * given a point in (x,y,z) space, return the real (x,y) coords needed to 
@@ -242,12 +246,12 @@ public class Board extends JPanel implements ActionListener {
      * @param z
      * @return int array holding x and y coords.
      */
-    private int[] renderFromZ(int x, int y, int z){
+    private int[] renderFromZ(int x, int y, int z) {
     	double zfact = getZFact(z);
-    	if (z<-Ex.HEIGHT) // switch to a constant slope to avoid math oblivion for negative z
+    	if (z < -Ex.HEIGHT) // switch to a constant slope to avoid math oblivion for negative z
     		zfact = z * ZFACT_TAIL_SLOPE;
-    	int eff_x = x + (int)(zfact * (levelinfo.getZPull_X()-x));
-    	int eff_y = y + (int)(zfact * (levelinfo.getZPull_Y()-y));
+    	int eff_x = x + (int)(zfact * (levelinfo.getZPull_X() - x));
+    	int eff_y = y + (int)(zfact * (levelinfo.getZPull_Y() - y));
     	int[] effcoords = {eff_x, eff_y};
     	return effcoords;
     }
@@ -258,7 +262,7 @@ public class Board extends JPanel implements ActionListener {
      * @param color
      * @param coords
      */
-    private void drawObject(Graphics2D g2d, Color color, List<int[]> coords){
+    private void drawObject(Graphics2D g2d, Color color, List<int[]> coords) {
     	drawObject(g2d, color, coords, 0);
     }
     
@@ -274,21 +278,20 @@ public class Board extends JPanel implements ActionListener {
      * @param coords
      * @param zoffset
      */
-    private void drawObject(Graphics2D g2d, Color color, List<int[]> coords, int zoffset){
+    private void drawObject(Graphics2D g2d, Color color, List<int[]> coords, int zoffset) {
     	int oldx = 0, oldy=0;
         g2d.setColor(color);
-    	for (int i=0; i<coords.size(); i++)
-    	{
-    		int x=coords.get(i)[0];
-    		int y=coords.get(i)[1];
-    		int z=coords.get(i)[2];
-    		int[] eff_coords = renderFromZ(x, y, z-boardpov+zoffset);
+    	for (int i = 0; i < coords.size(); i++) {
+    		int x = coords.get(i)[0];
+    		int y = coords.get(i)[1];
+    		int z = coords.get(i)[2];
+    		int[] eff_coords = renderFromZ(x, y, z - boardpov + zoffset);
     		
     		if (i > 0) {
     			g2d.drawLine(oldx, oldy, eff_coords[0], eff_coords[1]);
     		}
-    		oldx=eff_coords[0];
-    		oldy=eff_coords[1];
+    		oldx = eff_coords[0];
+    		oldy = eff_coords[1];
     	}
     }
     
@@ -299,37 +302,36 @@ public class Board extends JPanel implements ActionListener {
      * @param g2d
      * @param colCoords
      */
-    private void drawBoard(Graphics2D g2d, List<int[]> colCoords, int playerCol){
-    	int oldx = 0, oldy=0, oldbackx=0, oldbacky=0;
-    	int z=LEVEL_DEPTH;
+    private void drawBoard(Graphics2D g2d, List<int[]> colCoords, int playerCol) {
+    	int oldx = 0, oldy = 0, oldbackx = 0, oldbacky = 0;
+    	int z = LEVEL_DEPTH;
     	Color boardColor = levelinfo.getLevelColor();
     	if (superzapperTicksLeft > 0) { 
-    		boardColor = new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255));
+    		boardColor = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
     		superzapperTicksLeft--;
     	}
         g2d.setColor(boardColor);
-    	for (int i=0; i<colCoords.size(); i++)
-    	{
-    		int[] ftCoords = renderFromZ(colCoords.get(i)[0], colCoords.get(i)[1], 0-boardpov);
-    		int x=ftCoords[0];
-    		int y=ftCoords[1];
-    		int[] backCoords = renderFromZ(colCoords.get(i)[0], colCoords.get(i)[1], z-boardpov);
+    	for (int i = 0; i < colCoords.size(); i++) {
+    		int[] ftCoords = renderFromZ(colCoords.get(i)[0], colCoords.get(i)[1], 0 - boardpov);
+    		int x = ftCoords[0];
+    		int y = ftCoords[1];
+    		int[] backCoords = renderFromZ(colCoords.get(i)[0], colCoords.get(i)[1], z - boardpov);
     		int backx = backCoords[0];
     		int backy = backCoords[1];
     		if (i > 0) {
     			g2d.drawLine(oldx, oldy, x, y);
   			    g2d.drawLine(oldbackx, oldbacky, backx, backy);
-    			if (i == playerCol || i == playerCol+1){
+    			if (i == playerCol || i == playerCol + 1) {
     		        g2d.setColor(Color.YELLOW);
     			}
-    			if (i < colCoords.size()-1 || i==playerCol+1 || !levelinfo.isContinuous())
-        			g2d.drawLine(x,  y, backx, backy);
-    			if (i == playerCol || i == playerCol + 1){
+    			if (i < colCoords.size() - 1 || i == playerCol + 1 || !levelinfo.isContinuous()) {
+    				g2d.drawLine(x,  y, backx, backy);
+    			}
+    			if (i == playerCol || i == playerCol + 1) {
         	        g2d.setColor(boardColor);
     			}
-    		}
-    		else {
-    			if (i == playerCol || i == playerCol+1){
+    		} else {
+    			if (i == playerCol || i == playerCol + 1) {
     		        g2d.setColor(Color.YELLOW);
     			}
     			g2d.drawLine(x,  y, backx, backy);
@@ -337,10 +339,10 @@ public class Board extends JPanel implements ActionListener {
         	        g2d.setColor(boardColor);
     			}
     		}
-    		oldx=x;
-    		oldy=y;
-    		oldbackx=backx;
-    		oldbacky=backy;
+    		oldx = x;
+    		oldy = y;
+    		oldbackx = backx;
+    		oldbacky = backy;
     	}
     }
 
@@ -353,7 +355,7 @@ public class Board extends JPanel implements ActionListener {
      */
 	private void drawCenteredText(Graphics2D g2d, String text, float y, Font fnt) {
 		g2d.setFont(fnt);
-		g2d.drawString(text, (getWidth()-this.getFontMetrics(fnt).stringWidth(text))/2, y);
+		g2d.drawString(text, (getWidth() - this.getFontMetrics(fnt).stringWidth(text)) / 2, y);
 	}
 	private void drawCenteredText(Graphics2D g2d, String text, float y) {
 		drawCenteredText(g2d, text, y, stdfnt);
@@ -365,8 +367,7 @@ public class Board extends JPanel implements ActionListener {
     public void paint(Graphics g) {
     	Graphics2D g2d = (Graphics2D)g;
 
-		if (pause)
-    	{
+		if (pause) {
     		g.setColor(Color.white);
     		g.setFont(bigfnt);
     		drawCenteredText(g2d, "PAUSED", getHeight() / 2);
@@ -380,17 +381,18 @@ public class Board extends JPanel implements ActionListener {
     		drawBoard(g2d, levelinfo.getBoardFrontCoords(), crawler.getColumn());
 
     		// draw crawler
-    		if (crawler.isVisible()){
+    		if (crawler.isVisible()) {
     			Color c = Color.YELLOW;
-    			if (dptLeft > 0)
+    			if (dptLeft > 0) {
     				c = new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255));
+    			}
     			drawObject(g2d, c, crawler.getCoords(), crawlerzoffset);
     		}
     		
     		if (boardpov < -Crawler.CHEIGHT) {
     			// pov shows game level board in the distance; add stars for fun
     			for (List<int[]> s : stars) {
-    				Color c = new Color(r.nextInt(255),r.nextInt(255),r.nextInt(255));
+    				Color c = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
     				drawObject(g2d, c, s);
     			}
     		}
@@ -406,12 +408,13 @@ public class Board extends JPanel implements ActionListener {
 
     		// draw exes
     		for (Ex ex : exes) {
-    			if (ex.isVisible())
-    				if (ex.isPod())
-        				drawObject(g2d, Color.MAGENTA, ex.getCoords(levelinfo), crawlerzoffset);
-    				else
+    			if (ex.isVisible()) {
+    				if (ex.isPod()) {
+    					drawObject(g2d, Color.MAGENTA, ex.getCoords(levelinfo), crawlerzoffset);
+    				} else {
     					drawObject(g2d, Color.RED, ex.getCoords(levelinfo), crawlerzoffset);
-    			else {
+    				}
+    			} else {
     				// not visible but still in list means just killed
     				drawObject(g2d, Color.WHITE, ex.getDeathCoords(levelinfo)); 
     			}
@@ -446,42 +449,43 @@ public class Board extends JPanel implements ActionListener {
 		g2d.setFont(bigfnt);
 //		g2d.drawString("SCORE:", 5, 15);
 		g2d.drawString(Integer.toString(score), 100, 50);
-		if (score > hiscore)
+		
+		if (score > hiscore) {
 			hiscore = score;
+		}
+		
 		g2d.setFont(stdfnt);
 		drawCenteredText(g2d, "HIGH: " + hiscore, 30);
-		drawCenteredText(g2d, "LEVEL: "+levelnum, 55);
+		drawCenteredText(g2d, "LEVEL: " + levelnum, 55);
 		g2d.drawString("LIVES:", 680, 30);
 		g2d.drawString(Integer.toString(lives), 745, 30);
 		
-		if (levelprep){
+		if (levelprep) {
 			g2d.setColor(Color.YELLOW);
-			drawCenteredText(g2d, "SUPERZAPPER RECHARGE", B_HEIGHT *2/3);
+			drawCenteredText(g2d, "SUPERZAPPER RECHARGE", B_HEIGHT * 2 / 3);
 		}
 
 	
 		if (gameover) {
     		g.setColor(Color.GREEN);
     		drawCenteredText(g2d, "GAME OVER", getHeight() / 2, bigfnt);
-    		drawCenteredText(g2d, "PRESS SPACE TO RESTART", getHeight() * 3/4);
+    		drawCenteredText(g2d, "PRESS SPACE TO RESTART", getHeight() * 3 / 4);
 
-    		FileWriter f=null;
+    		FileWriter f = null;
             try {
             	f = new FileWriter("wbt.hi");
             	f.write(Integer.toString(hiscore));
         		f.close();
+            } catch (Exception e) { 
+            	// if we can't write the hi score file...oh well.	
             }
-            catch (Exception e)
-            { // if we can't write the hi score file...oh well.	
-            }
-    		
     	}
 
     	Toolkit.getDefaultToolkit().sync();
     	g.dispose();
     }
     
-    private boolean isPlayerDead(){
+    private boolean isPlayerDead() {
     	return (clearboard && !levelcleared) || crawlerSpiked;
     }
     
@@ -494,11 +498,12 @@ public class Board extends JPanel implements ActionListener {
      */
     public void actionPerformed(ActionEvent e) {
 
-    	if (pause)
+    	if (pause) {
     		return; // if we're on pause, don't do anything.
+    	}
 
     	// if player died, they don't get to move crawler or superzap
-    	if (!isPlayerDead()){
+    	if (!isPlayerDead()) {
     		crawler.move(crawlerzoffset);
         	if (superzapperTicksLeft == 0 && crawler.isSuperzapping()) {
         		superzapperTicksLeft = SUPERZAPPER_TICKS;
@@ -508,55 +513,55 @@ public class Board extends JPanel implements ActionListener {
     	if (clearboard)	{ 
     		// if we're clearing the board, updating reduces to the boardclear animations
     		if (crawlerSpiked) {
-    			dptLeft -=1;
-    			if (dptLeft <= 0)
-    				if (lives > 0)
+    			dptLeft -= 1;
+    			if (dptLeft <= 0) {
+    				if (lives > 0) {
     					replayLevel();
-    				else
+    				} else {
     					crawlerSpiked = false; // damage has been done; other case will now handle game over.
-    		}
-    		else if (levelcleared)
-    		{   // player passed level.  
+    				}
+    			}
+    		} else if (levelcleared) {
+    			// player passed level.  
     			// pull board out towards screen until player leaves far end of board.
     			boardpov += SPEED_LEV_ADVANCE;
-    			if (crawlerzoffset < LEVEL_DEPTH)
-    				crawlerzoffset+=SPEED_LEV_ADVANCE; 
+    			if (crawlerzoffset < LEVEL_DEPTH) {
+    				crawlerzoffset += SPEED_LEV_ADVANCE;
+    			}
 
-    			if (boardpov > LEVEL_DEPTH * 5/4)
-    			{
+    			if (boardpov > LEVEL_DEPTH * 5 / 4) {
      				levelnum++;
     				initLevel();
     				boardpov = -LEVEL_DEPTH * 2;
-    				levelprep=true;
+    				levelprep = true;
     			}
-    		}
-    		else if (lives > 0)
-    		{   // player died but not out of lives.
+    		} else if (lives > 0) {
+    			// player died but not out of lives.
     			// pause, then suck crawler down and restart level
-    			dptLeft -=1;
+    			dptLeft -= 1;
     			if (dptLeft <= 0) {
-    				crawlerzoffset += SPEED_LEV_ADVANCE*2;
-    				if (crawlerzoffset > LEVEL_DEPTH)
+    				crawlerzoffset += SPEED_LEV_ADVANCE * 2;
+    				if (crawlerzoffset > LEVEL_DEPTH) {
     					replayLevel();
+    				}
     			}
-    		}
-    		else
-    		{ // player died and game is over.  advance everything along z away from player.
-    			if (boardpov > -LEVEL_DEPTH *5)
+    		} else { 
+    			// player died and game is over.  advance everything along z away from player.
+    			if (boardpov > -LEVEL_DEPTH * 5) {
     				boardpov -= GAME_OVER_BOARDSPEED;
-    			else
-    				gameover=true;
+    			} else {
+    				gameover = true;
+    			}
     		}
     	}
 
     	if (lives > 0)
     	{
-    		if (levelprep)
-    		{   // just cleared a level and we're prepping the new one
+    		if (levelprep) {   
+    			// just cleared a level and we're prepping the new one
     			// advance POV onto board, and then allow normal play
-    			boardpov += SPEED_LEV_ADVANCE*3/2;
-    			if (boardpov >= 0)
-    			{
+    			boardpov += SPEED_LEV_ADVANCE * 3 / 2;
+    			if (boardpov >= 0) {
     				boardpov = 0;
     				levelprep = false;
     			}
@@ -566,18 +571,18 @@ public class Board extends JPanel implements ActionListener {
     		ArrayList<Missile> ms = crawler.getMissiles();
     		for (int i = 0; i < ms.size(); i++) {
     			Missile m = (Missile) ms.get(i);
-    			if (m.isVisible()) 
+    			if (m.isVisible()) {
     				m.move(LEVEL_DEPTH);
-    			else
+    			} else {
     				ms.remove(i);
+    			}
     		}
 
-    		if (!isPlayerDead())
-    		{   // if the player is alive, the exes and spikes can move and shoot
+    		if (!isPlayerDead()) {   
+    			// if the player is alive, the exes and spikes can move and shoot
     			for (int i = 0; i < exes.size(); i++) {
     				Ex ex = (Ex) exes.get(i);
-    				if (ex.isVisible()) 
-    				{
+    				if (ex.isVisible()) {
     					ex.move(B_WIDTH, crawler.getColumn());
     					if (ex.getZ() <= 0) {
     				        if (ex.isPod()) {
@@ -586,15 +591,16 @@ public class Board extends JPanel implements ActionListener {
     				        	ex.setPod(false);
     				        }
     					}
+    					
     					if ((ex.getZ() < LEVEL_DEPTH) 
-    							&& (r.nextInt(10000) < levelinfo.getExFireBPS()))
-    					{ // this ex fires a missile
+    							&& (r.nextInt(10000) < levelinfo.getExFireBPS())) { 
+    						// this ex fires a missile
     						enemymissiles.add(new Missile(ex.getColumn(), ex.getZ(), false));
         	        		SoundManager.get().play(Sound.ENEMYFIRE);
     					}
-    				}
-    				else 
+    				} else {
     					exes.remove(i);
+    				}
     			}
     			
     			for (Spike s : spikes) {
@@ -602,8 +608,8 @@ public class Board extends JPanel implements ActionListener {
     					if (s.isSpinnerVisible()) {
     						s.move();
         					if ((s.getSpinnerZ() < LEVEL_DEPTH) 
-        							&& (r.nextInt(10000) < levelinfo.getExFireBPS()/4))
-        					{ // with 1/4 the frequency of an ex, this spinner fires a missile
+        							&& (r.nextInt(10000) < levelinfo.getExFireBPS() / 4))	{ 
+        						// with 1/4 the frequency of an ex, this spinner fires a missile
         						enemymissiles.add(new Missile(s.getColumn(), s.getSpinnerZ(), false));
             	        		SoundManager.get().play(Sound.ENEMYFIRE);
         					}
@@ -616,19 +622,19 @@ public class Board extends JPanel implements ActionListener {
     		// update ex missiles
     		for (int i = 0; i < enemymissiles.size(); i++) {
     			Missile exm = (Missile) enemymissiles.get(i);
-    			if (exm.isVisible()) 
+    			if (exm.isVisible()) {
     				exm.move(LEVEL_DEPTH);
-    			else {
+    			} else {
     				enemymissiles.remove(i);
     			}
     		}
 
-    		if (!isPlayerDead())
+    		if (!isPlayerDead()) {
     			checkCollisions();
+    		}
 
     		// did player clear level?
-    		if (exes.size() <= 0 && !crawlerSpiked && !levelcleared)
-    		{
+    		if (exes.size() <= 0 && !crawlerSpiked && !levelcleared) {
     			levelcleared = true;
     			clearboard = true;
         		SoundManager.get().play(Sound.LEVELCLEAR);
@@ -653,15 +659,14 @@ public class Board extends JPanel implements ActionListener {
     	if (clearboard && levelcleared && !crawlerSpiked) {
     		// check spike/player
     		for (Spike s : spikes) {
-    			if (s.isVisible() && s.getColumn() == cCol && ((LEVEL_DEPTH-s.getLength()) < crawlerzoffset)) {
+    			if (s.isVisible() && s.getColumn() == cCol && ((LEVEL_DEPTH - s.getLength()) < crawlerzoffset)) {
     				playerDeath();
     				crawlerSpiked = true;
     				levelcleared = false;  
     				break;
     			}
     		}
-    	}
-    	else {
+    	} else {
     		// check ex/player
         	for (Ex ex : exes) {
         		if ((ex.getColumn() == cCol) && (ex.getZ() < Ex.HEIGHT)) {
@@ -686,9 +691,9 @@ public class Board extends JPanel implements ActionListener {
 
     	// while not really a collision, the superzapper acts more or less like a 
     	// collision with all on-board non-pod exes, so it goes here.
-    	if (superzapperTicksLeft == SUPERZAPPER_TICKS/2) {
+    	if (superzapperTicksLeft == SUPERZAPPER_TICKS / 2) {
     		// halfway through the superzap, actually destroy exes
-    		for (Ex ex : exes){
+    		for (Ex ex : exes) {
     			if (ex.getZ() < LEVEL_DEPTH && !ex.isPod()) {
     				ex.setVisible(false);
             		SoundManager.get().play(Sound.ENEMYDEATH);
@@ -704,13 +709,13 @@ public class Board extends JPanel implements ActionListener {
     		for (Ex ex : exes) {
     			// check for normal missile/ex collision, also ex adjacent to crawler
     			if (m.isVisible() 
-    					&& (m.getColumn() == ex.getColumn() && (Math.abs(m.getZPos() - ex.getZ())< Ex.HEIGHT)) 
+    					&& (m.getColumn() == ex.getColumn() && (Math.abs(m.getZPos() - ex.getZ()) < Ex.HEIGHT)) 
     					|| ((m.getColumn() == crawler.getColumn()) 
     							&& (ex.getZ() <= 0)
     							&& (r.nextInt(10) < 9)  // 90% success rate for hitting adjacent exes
-    							&& (m.getZPos() < Crawler.CHEIGHT*2)
-    							&& (((ex.getColumn() +1)%ncols == crawler.getColumn())
-    									|| ((crawler.getColumn()+1)%ncols == ex.getColumn())))){
+    							&& (m.getZPos() < Crawler.CHEIGHT * 2)
+    							&& (((ex.getColumn() + 1) % ncols == crawler.getColumn())
+    									|| ((crawler.getColumn() + 1) % ncols == ex.getColumn())))) {
     				if (ex.isPod()) { 
     					// this ex is a pod; split into normal exes
     					score += Ex.PODSCOREVAL;
@@ -718,8 +723,7 @@ public class Board extends JPanel implements ActionListener {
     					ex.setPod(false);
     					newEx = ex.spawn();
     	        		SoundManager.get().play(Sound.ENEMYDEATH);
-    				}
-    				else {
+    				} else {
     					// player hit ex
     					m.setVisible(false);
     					ex.setVisible(false);
@@ -729,8 +733,10 @@ public class Board extends JPanel implements ActionListener {
     				}
     			}
     		}
-    		if (newEx != null)
+    		
+    		if (newEx != null) {
     			exes.add(newEx);
+    		}
 
     		// vs exmissiles:
     		if (m.isVisible()) {
@@ -779,12 +785,11 @@ public class Board extends JPanel implements ActionListener {
             if (key == KeyEvent.VK_P) {
             	pause = !pause;
             	repaint();
+            } else if (!isPlayerDead()) {
+            	crawler.keyPressed(e, crawlerzoffset);
             }
-            else if (!isPlayerDead())
-                crawler.keyPressed(e, crawlerzoffset);
             
-            if (gameover)
-            {
+            if (gameover) {
                 if (key == KeyEvent.VK_SPACE) {
                     startGame();
                 }
