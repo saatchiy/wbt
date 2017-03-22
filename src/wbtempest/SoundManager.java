@@ -35,8 +35,10 @@ public class SoundManager {
 	private Map<Sound, GameSoundData> soundMap = null;
 	
 	public static SoundManager get() {
-		if (sm == null)
+		if (sm == null) {
 			sm = new SoundManager();
+		}
+			
 		return sm;
 	}
 	
@@ -135,14 +137,12 @@ public class SoundManager {
 	 * @author ugliest
 	 *
 	 */
-	private class SoundPlayer implements Runnable, LineListener{
+	private class SoundPlayer implements Runnable, LineListener {
 		private Clip c;
 		private Sound s;
 		private boolean active = true;
 
-		public SoundPlayer(Sound s, AudioInputStream ais)
-			throws LineUnavailableException, IOException
-		{
+		public SoundPlayer(Sound s, AudioInputStream ais) throws LineUnavailableException, IOException {
 			this.s = s;
             AudioFormat format = ais.getFormat();
             DataLine.Info info = new DataLine.Info(Clip.class, format);
@@ -153,23 +153,23 @@ public class SoundManager {
 		}
 		
 		@Override
-		public void run (){
+		public void run () {
 			// the sole purpose of this thread is to wait, to close the sound clip
 			// after the sound plays and knows it's done, but isn't allowed to
 			// close itself.
 			while (active) {
 				try {
 					Thread.sleep(20);
-				}
-				catch (InterruptedException ie) {
+				} catch (InterruptedException ie) {
 					// yawn
 				}
 			}
+			
 			c.close();
 		}
 		
 		@Override
-		public void update (LineEvent e){
+		public void update (LineEvent e) {
 			Type t = e.getType();
 			
 			if (t == Type.STOP && active && e.getLine() == c) {
