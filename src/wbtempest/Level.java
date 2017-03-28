@@ -68,8 +68,7 @@ public class Level {
 						firsttime = false;
 					}
 					else {
-						Column col = new Column(oldx, oldy, x, y);
-						columns.add(col);
+						addColumn(x, y, oldx, oldy);
 					}
 					oldx = x;
 					oldy = y;
@@ -86,8 +85,7 @@ public class Level {
 						firsttime = false;
 					}
 					else {
-						Column col = new Column(oldx, oldy, x, y);
-						columns.add(col);
+						addColumn(x, y, oldx, oldy);
 					}
 					oldx = x;
 					oldy = y;
@@ -229,6 +227,16 @@ public class Level {
 				
 		}
 	}
+	
+	/* addColumn() is a method created and called in 11 locations.
+	 *  This is created to resolve the clones in this file.
+	 */
+	
+	private void addColumn(int x, int y, int oldx, int oldy) { 
+		Column col = new Column(oldx, oldy, x, y);
+		columns.add(col);
+	}
+		
 	
 	public List<Column> getColumns(){
 		return columns;
