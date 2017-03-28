@@ -399,8 +399,8 @@ public class Ex {
     			coords[4][0] = (int) (p1[0] - (p2[0]-p1[0])/3.5);
     			coords[4][1] = (int) (p1[1] - (p2[1]-p1[1])/3.5);
     			coords[4][2] = (int) (z+EXHEIGHT_H*1.8);
-    			coords[5][0] = p1[0];// - (p2[0]-p1[0])/15;
-    			coords[5][1] = p1[1];// - (p2[1]-p1[1])/15;
+    			coords[5][0] = p1[0];
+    			coords[5][1] = p1[1];
     			coords[5][2] = (int) (z+EXHEIGHT_H*1.8);
     			coords[6] = coords[0];
     			break;
@@ -413,8 +413,8 @@ public class Ex {
     			coords[1][0] = (int) (p2[0] + (p2[0]-p1[0])/3.5);
     			coords[1][1] = (int) (p2[1] + (p2[1]-p1[1])/3.5);
     			coords[1][2] = (int) (z+EXHEIGHT_H*1.8);
-    			coords[2][0] = p2[0];// - (p2[0]-p1[0])/15;
-    			coords[2][1] = p2[1];// - (p2[1]-p1[1])/15;
+    			coords[2][0] = p2[0];
+    			coords[2][1] = p2[1];
     			coords[2][2] = (int) (z+EXHEIGHT_H*1.8);
     			coords[3][0] = p2[0];
     			coords[3][1] = p2[1];
