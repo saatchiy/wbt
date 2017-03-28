@@ -447,7 +447,6 @@ public class Board extends JPanel implements ActionListener {
 
     	g2d.setColor(Color.GREEN);
 		g2d.setFont(bigfnt);
-//		g2d.drawString("SCORE:", 5, 15);
 		g2d.drawString(Integer.toString(score), 100, 50);
 		
 		if (score > hiscore) {
