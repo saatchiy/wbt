@@ -135,16 +135,14 @@ public class Level {
 						firsttime = false;
 					}
 					else {
-						Column col = new Column(oldx, oldy, x, y);
-						columns.add(col);
+						addColumn(x, y, oldx, oldy);
 					}
 					oldx = x;
 					oldy = y;
 				}
 				// right
 				for (; y >= cy-radius; y-=(radius*3/2/colsPerSide),x-=radius*2/3/colsPerSide+1){
-					Column col = new Column(oldx, oldy, x, y);
-					columns.add(col);
+					CaddColumn(x, y, oldx, oldy);
 					oldx = x;
 					oldy = y;
 				}
@@ -159,15 +157,13 @@ public class Level {
 						firsttime = false;
 					}
 					else {
-						Column col = new Column(oldx, oldy, x, y);
-						columns.add(col);
+						addColumn(x, y, oldx, oldy);
 					}
 					oldx = x;
 					oldy = y;
 				}
 				for (; x <= cx*3/2; x+= cx/2/(ncols/2), y-=(cy*3/2)/(ncols/2)){
-					Column col = new Column(oldx, oldy, x, y);
-					columns.add(col);
+					addColumn(x, y, oldx, oldy);
 					oldx = x;
 					oldy = y;
 				}
