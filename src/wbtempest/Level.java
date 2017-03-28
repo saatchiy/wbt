@@ -179,8 +179,7 @@ public class Level {
 						firsttime = false;
 					}
 					else {
-						Column col = new Column(oldx, oldy, x, y);
-						columns.add(col);
+						addColumn(x, y, oldx, oldy);
 					}
 					oldx = x;
 					oldy = y;
