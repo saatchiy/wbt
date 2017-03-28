@@ -225,10 +225,7 @@ public class Crawler {
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
 
-        if (key == KeyEvent.VK_LEFT) {
-            vpos = 0;
-        }
-        else if (key == KeyEvent.VK_RIGHT) {
+        if (key == KeyEvent.VK_LEFT || key == KeyEvent.VK_RIGHT) {
             vpos = 0;
         }
         else if (key == KeyEvent.VK_SPACE) {
