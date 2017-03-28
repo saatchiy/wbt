@@ -92,8 +92,7 @@ public class Level {
 				}
 				// bottom
 				for (x = cx - radius, y = cy+radius; x < cx+radius; x+=(radius*2/colsPerSide)){
-					Column col = new Column(oldx, oldy, x, y);
-					columns.add(col);
+					addColumn(x, y, oldx, oldy);
 					oldx = x;
 					oldy = y;
 				}
