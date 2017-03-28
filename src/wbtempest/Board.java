@@ -211,10 +211,7 @@ public class Board extends JPanel implements ActionListener {
         }
     }
     
-    public void addNotify() {
-        super.addNotify();
-    }
-
+	
     /**
      * This is how we achieve the 3D effect.  The z-axis is assumed to
      * point "into" the screen, away from the player.  interpolation is
