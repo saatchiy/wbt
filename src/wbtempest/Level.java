@@ -21,7 +21,12 @@ public class Level {
 	private boolean exesCanMove = false;
 	private int zpull_x;  // z pull is the point that the z-axis leads to for this level
 	private int zpull_y;
-	private int numscreens = 6;
+	private int numscreens = 6; // 6 stages of the game
+	
+	/**
+	* Level method gives the shape of the
+	* structures for 5 different level.
+	*/
 	
 	public Level(int levnum, int b_width, int b_height){
 		int ncols;
@@ -52,7 +57,7 @@ public class Level {
 
 		// if we run out of screens....cycle
 		int screennum = (levnum-1) % numscreens;
-		//screennum=5;
+		
 
 		switch (screennum) {
 		case 0:	// circle
@@ -219,7 +224,8 @@ public class Level {
 		}
 	}
 	
-	/* addColumn() is a method created and called in 11 locations.
+	/**
+     *	addColumn() is a method created and called in 11 locations.
 	 *  This is created to resolve the clones in this file.
 	 */
 	
