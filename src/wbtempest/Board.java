@@ -772,10 +772,12 @@ public class Board extends JPanel implements ActionListener {
      */
     private class TAdapter extends KeyAdapter {
 
-        public void keyReleased(KeyEvent e) {
+        @Override
+		public void keyReleased(KeyEvent e) {
             crawler.keyReleased(e);
         }
-
+		
+		@Override
         public void keyPressed(KeyEvent e) {
             int key = e.getKeyCode();
             if (key == KeyEvent.VK_P) {
