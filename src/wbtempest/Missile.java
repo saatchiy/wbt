@@ -19,6 +19,9 @@ public class Missile {
 	private boolean visible = true;
 	private int speed;
 	
+/**
+ * This is a constructor
+ */
 	public Missile(int colnum, int zpos, boolean down){
 		this.colnum = colnum;
 		this.zpos = zpos;
@@ -37,6 +40,12 @@ public class Missile {
 		return colnum;
 	}
 	
+/**
+* Move method depends on z position and
+* maximum value of z. 
+* This method is called by actionPermed method in Board.java
+* This is a void method.
+*/
 	public void move(int maxz) {
 		zpos += speed;
 		if ((zpos > maxz) || (zpos < 0)) {
