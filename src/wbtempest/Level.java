@@ -142,7 +142,7 @@ public class Level {
 				}
 				// right
 				for (; y >= cy-radius; y-=(radius*3/2/colsPerSide),x-=radius*2/3/colsPerSide+1){
-					CaddColumn(x, y, oldx, oldy);
+					addColumn(x, y, oldx, oldy);
 					oldx = x;
 					oldy = y;
 				}
