@@ -19,7 +19,12 @@ public class Level {
 	private List<Column> columns;
 	private boolean continuous = false;
 	private boolean exesCanMove = false;
-	private int zpull_x;  // z pull is the point that the z-axis leads to for this level
+	//private int zpull_x;  // z pull is the point that the z-axis leads to for this level
+	/* remarks */
+	/* As it's not following the java naming standard convention, 
+	making change as per the Oracle specified naming convention 
+	http://www.oracle.com/technetwork/java/code conventions-135099.html*/
+	private int zPullX;
 	private int zpull_y;
 	private int numscreens = 6; // 6 stages of the game
 	
