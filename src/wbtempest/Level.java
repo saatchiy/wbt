@@ -24,7 +24,7 @@ public class Level {
 	/* As it's not following the java naming standard convention, 
 	making change as per the Oracle specified naming convention 
 	http://www.oracle.com/technetwork/java/code conventions-135099.html*/
-	private int zPullX;
+	private int zpull_x;
 	private int zpull_y;
 	private int numscreens = 6; // 6 stages of the game
 	

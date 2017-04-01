@@ -39,13 +39,18 @@ public class Board extends JPanel implements ActionListener {
     static int B_WIDTH = 800;
     static int B_HEIGHT = 680;
     static int LEVEL_DEPTH = 600;
-    static int START_LIVES = 3;
+    static int START_LIVES = 30;
 	private static double ZSTRETCH = 125; // lower = more stretched on z axis
 	private static int SPEED_LEV_ADVANCE = 7;  // speed at which we to the next board after clearing a level
 	private static int GAME_OVER_BOARDSPEED = 40;  // speed at which the game recedes when player loses
 	private static int DEATH_PAUSE_TICKS = 70;  // ticks to pause on crawler death
 	private static int SUPERZAPPER_TICKS = 30; // how long does a superzap last?
 	private static int NUM_STARS = 50; // number of stars when entering a level
+	
+	// the downside to the curve used to represent the z-axis, is that
+    // it goes to infinity quickly for negative Z values.  to get around this,
+    // a line is used to continue the slope manageably for negative z.
+    private static double ZFACT_TAIL_SLOPE = 2 * (getZFact(1) - getZFact(0)) / (1 - 0);
 
 	private Timer timer;
     private Crawler crawler;
@@ -68,6 +73,7 @@ public class Board extends JPanel implements ActionListener {
     private int superzapperTicksLeft = 0;  // if this is > 0, we're currently in a superzap
     private boolean crawlerSpiked;
     private List<List<int[]>> stars;
+    
 
 	Font stdfnt, bigfnt;
 
@@ -138,7 +144,7 @@ public class Board extends JPanel implements ActionListener {
     	lives=START_LIVES;
     	gameover=false;
     	score = 0;
-    	levelnum = 1;
+    	levelnum = 3;
 
     	initLevel();
     }
@@ -152,11 +158,18 @@ public class Board extends JPanel implements ActionListener {
         exes.clear();
         int ncols = levelinfo.getColumns().size();
         for (int i=0; i<levelinfo.getNumExes(); i++) {
-            exes.add(new Ex(r.nextInt(ncols),
-            		levelnum > 1 ? r.nextBoolean() : false,
-            		ncols, 
-       				levelinfo.exesCanMove(),
-       				levelinfo.isContinuous()));
+        	if (levelnum > 1 && r.nextBoolean()) {
+        		exes.add(new Pod(r.nextInt(ncols),
+                		ncols, 
+           				levelinfo.exesCanMove(),
+           				levelinfo.isContinuous()));
+        	} else {
+        		exes.add(new Ex(r.nextInt(ncols),
+                		ncols, 
+           				levelinfo.exesCanMove(),
+           				levelinfo.isContinuous()));
+        	}
+            
         }
         spikes.clear();
         if (levelinfo.getNumSpikes() > 0) {
@@ -197,12 +210,19 @@ public class Board extends JPanel implements ActionListener {
         enemymissiles.clear();
         if (exes.size() == 0) {
         	// need at least one ex
-            exes.add(new Ex(r.nextInt(levelinfo.getColumns().size()),
-            		r.nextBoolean(),
-            		levelinfo.getColumns().size(), 
-       				levelinfo.exesCanMove(),
-       				levelinfo.isContinuous()));
-            exes.get(0).resetZ(LEVEL_DEPTH * 5 / 4);
+        	if (r.nextBoolean()) {
+        		exes.add(new Ex(r.nextInt(levelinfo.getColumns().size()),
+                		levelinfo.getColumns().size(), 
+           				levelinfo.exesCanMove(),
+           				levelinfo.isContinuous()));
+                exes.get(0).resetZ(LEVEL_DEPTH * 5 / 4);
+        	} else {
+        		exes.add(new Ex(r.nextInt(levelinfo.getColumns().size()),
+                		levelinfo.getColumns().size(), 
+           				levelinfo.exesCanMove(),
+           				levelinfo.isContinuous()));
+                exes.get(0).resetZ(LEVEL_DEPTH * 5 / 4);
+        	}
         }
         else {
 			for (Ex ex : exes) {
@@ -228,11 +248,6 @@ public class Board extends JPanel implements ActionListener {
     private static double getZFact(int z) {
       return 1.0 - (ZSTRETCH / (z + ZSTRETCH));
     }
-
-    // the downside to the curve used to represent the z-axis, is that
-    // it goes to infinity quickly for negative Z values.  to get around this,
-    // a line is used to continue the slope manageably for negative z.
-    private static double ZFACT_TAIL_SLOPE = 2 * (getZFact(1) - getZFact(0)) / (1 - 0);
 
     /**
      * given a point in (x,y,z) space, return the real (x,y) coords needed to 
@@ -395,7 +410,7 @@ public class Board extends JPanel implements ActionListener {
     		}
 
     		// draw crawler's missiles
-    		Color missileColors[] = {Color.BLUE, Color.RED, Color.green};
+    		Color[] missileColors = {Color.BLUE, Color.RED, Color.green};
     		for (Missile m : crawler.getMissiles()) {
     			if (m.isVisible()) {
     				drawObject(g2d, Color.YELLOW, m.getCoords(levelinfo));
@@ -406,7 +421,7 @@ public class Board extends JPanel implements ActionListener {
     		// draw exes
     		for (Ex ex : exes) {
     			if (ex.isVisible()) {
-    				if (ex.isPod()) {
+    				if (ex instanceof Pod) {
     					drawObject(g2d, Color.MAGENTA, ex.getCoords(levelinfo), crawlerzoffset);
     				} else {
     					drawObject(g2d, Color.RED, ex.getCoords(levelinfo), crawlerzoffset);
@@ -581,10 +596,13 @@ public class Board extends JPanel implements ActionListener {
     				if (ex.isVisible()) {
     					ex.move(B_WIDTH, crawler.getColumn());
     					if (ex.getZ() <= 0) {
-    				        if (ex.isPod()) {
+    				        if (ex instanceof Pod) {
     				        	// we're at the top of the board; split the pod
-    				        	exes.add(ex.spawn());
-    				        	ex.setPod(false);
+    				        	ArrayList<Ex> spawned = ((Pod) ex).spawn();
+    				        	for (Ex splittedEx : spawned) {
+    				        		exes.add(splittedEx);
+    				        	}
+    				        	exes.remove(ex);
     				        }
     					}
     					
@@ -690,7 +708,7 @@ public class Board extends JPanel implements ActionListener {
     	if (superzapperTicksLeft == SUPERZAPPER_TICKS / 2) {
     		// halfway through the superzap, actually destroy exes
     		for (Ex ex : exes) {
-    			if (ex.getZ() < LEVEL_DEPTH && !ex.isPod()) {
+    			if (ex.getZ() < LEVEL_DEPTH && !(ex instanceof Pod)) {
     				ex.setVisible(false);
             		SoundManager.get().play(Sound.ENEMYDEATH);
     			}
@@ -712,12 +730,14 @@ public class Board extends JPanel implements ActionListener {
     							&& (m.getZPos() < Crawler.CHEIGHT * 2)
     							&& (((ex.getColumn() + 1) % ncols == crawler.getColumn())
     									|| ((crawler.getColumn() + 1) % ncols == ex.getColumn())))) {
-    				if (ex.isPod()) { 
+    				if (ex instanceof Pod) { 
     					// this ex is a pod; split into normal exes
     					score += Ex.PODSCOREVAL;
-    					m.setVisible(false);
-    					ex.setPod(false);
-    					newEx = ex.spawn();
+    					ArrayList<Ex> spawned = ((Pod) ex).spawn();
+			        	for (Ex splittedEx : spawned) {
+			        		exes.add(splittedEx);
+			        	}
+			        	exes.remove(ex);
     	        		SoundManager.get().play(Sound.ENEMYDEATH);
     				} else {
     					// player hit ex
